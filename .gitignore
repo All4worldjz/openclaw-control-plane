@@ -1,0 +1,77 @@
+# macOS / editors
+.DS_Store
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Python / Node
+.venv/
+venv/
+node_modules/
+dist/
+build/
+__pycache__/
+*.pyc
+npm-debug.log*
+yarn-error.log*
+
+# Secrets / env
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+*.p12
+*.crt
+secrets/
+secret/
+private/
+*.secret
+*.secrets
+
+# OpenClaw runtime/state - NEVER COMMIT
+.openclaw/
+**/.openclaw/
+workspace/
+workspace-*/
+sessions/
+agent/
+agents/*/sessions/
+agents/*/agent/
+memory/
+MEMORY.md
+memory.md
+qdrant/
+chroma/
+sqlite/
+*.sqlite
+*.sqlite3
+*.db
+*.wal
+*.shm
+logs/
+*.log
+transcripts/
+downloads/
+uploads/
+cache/
+tmp-runtime/
+
+# Local model / embeddings / vector stores
+ollama/
+models/
+embeddings/
+vectors/
+rag/
+index/
+
+# Archives / backups
+*.tar
+*.tar.gz
+*.zip
+*.bak
+
+# Keep placeholders
+!.keep

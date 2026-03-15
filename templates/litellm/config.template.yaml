@@ -1,0 +1,5 @@
+model_list: []
+general_settings:
+  master_key: "set-via-env"
+litellm_settings:
+  set_verbose: false
