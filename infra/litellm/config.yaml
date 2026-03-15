@@ -1,0 +1,232 @@
+model_list:
+  # ------------------------------------------
+  # chat_fast = low latency / cheap-first
+  # order works with enable_pre_call_checks: true
+  # ------------------------------------------
+  - model_name: chat_fast
+    litellm_params:
+      model: openai/os.environ/BAILIAN_FAST_MODEL
+      api_base: os.environ/BAILIAN_API_BASE
+      api_key: os.environ/BAILIAN_API_KEY
+      order: 1
+      rpm: 300
+      timeout: 25
+    model_info:
+      health_check_timeout: 8
+      health_check_max_tokens: 2
+
+  - model_name: chat_fast
+    litellm_params:
+      model: openai/os.environ/MINIMAX_FAST_MODEL
+      api_base: os.environ/MINIMAX_API_BASE
+      api_key: os.environ/MINIMAX_API_KEY
+      order: 2
+      rpm: 240
+      timeout: 30
+    model_info:
+      health_check_timeout: 8
+      health_check_max_tokens: 2
+
+  - model_name: chat_fast
+    litellm_params:
+      model: gemini/os.environ/GEMINI_FAST_MODEL
+      api_key: os.environ/GEMINI_API_KEY
+      order: 3
+      rpm: 120
+      timeout: 35
+    model_info:
+      health_check_timeout: 10
+      health_check_max_tokens: 2
+
+  # ------------------------------------------
+  # chat_balanced = general purpose
+  # ------------------------------------------
+  - model_name: chat_balanced
+    litellm_params:
+      model: openai/os.environ/BAILIAN_BALANCED_MODEL
+      api_base: os.environ/BAILIAN_API_BASE
+      api_key: os.environ/BAILIAN_API_KEY
+      order: 1
+      rpm: 180
+      timeout: 45
+    model_info:
+      health_check_timeout: 10
+      health_check_max_tokens: 3
+
+  - model_name: chat_balanced
+    litellm_params:
+      model: openai/os.environ/MINIMAX_BALANCED_MODEL
+      api_base: os.environ/MINIMAX_API_BASE
+      api_key: os.environ/MINIMAX_API_KEY
+      order: 2
+      rpm: 150
+      timeout: 45
+    model_info:
+      health_check_timeout: 10
+      health_check_max_tokens: 3
+
+  - model_name: chat_balanced
+    litellm_params:
+      model: gemini/os.environ/GEMINI_DEEP_MODEL
+      api_key: os.environ/GEMINI_API_KEY
+      order: 3
+      rpm: 60
+      timeout: 60
+    model_info:
+      health_check_timeout: 12
+      health_check_max_tokens: 3
+
+  # ------------------------------------------
+  # reasoning_deep = strongest complex reasoning
+  # ------------------------------------------
+  - model_name: reasoning_deep
+    litellm_params:
+      model: openai/os.environ/BAILIAN_DEEP_MODEL
+      api_base: os.environ/BAILIAN_API_BASE
+      api_key: os.environ/BAILIAN_API_KEY
+      order: 1
+      rpm: 60
+      timeout: 90
+    model_info:
+      health_check_timeout: 12
+      health_check_max_tokens: 3
+
+  - model_name: reasoning_deep
+    litellm_params:
+      model: openai/os.environ/MINIMAX_BALANCED_MODEL
+      api_base: os.environ/MINIMAX_API_BASE
+      api_key: os.environ/MINIMAX_API_KEY
+      order: 2
+      rpm: 60
+      timeout: 90
+    model_info:
+      health_check_timeout: 12
+      health_check_max_tokens: 3
+
+  - model_name: reasoning_deep
+    litellm_params:
+      model: gemini/os.environ/GEMINI_DEEP_MODEL
+      api_key: os.environ/GEMINI_API_KEY
+      order: 3
+      rpm: 30
+      timeout: 90
+    model_info:
+      health_check_timeout: 15
+      health_check_max_tokens: 3
+
+  # ------------------------------------------
+  # coding_primary = best coding path
+  # ------------------------------------------
+  - model_name: coding_primary
+    litellm_params:
+      model: openai/os.environ/BAILIAN_CODE_MODEL
+      api_base: os.environ/BAILIAN_API_BASE
+      api_key: os.environ/BAILIAN_API_KEY
+      order: 1
+      rpm: 120
+      timeout: 90
+    model_info:
+      health_check_timeout: 12
+      health_check_max_tokens: 3
+
+  - model_name: coding_primary
+    litellm_params:
+      model: openai/os.environ/MINIMAX_CODE_MODEL
+      api_base: os.environ/MINIMAX_API_BASE
+      api_key: os.environ/MINIMAX_API_KEY
+      order: 2
+      rpm: 120
+      timeout: 90
+    model_info:
+      health_check_timeout: 12
+      health_check_max_tokens: 3
+
+  - model_name: coding_primary
+    litellm_params:
+      model: gemini/os.environ/GEMINI_DEEP_MODEL
+      api_key: os.environ/GEMINI_API_KEY
+      order: 3
+      rpm: 30
+      timeout: 90
+    model_info:
+      health_check_timeout: 15
+      health_check_max_tokens: 3
+
+  # ------------------------------------------
+  # coding_fast = quicker code turnarounds
+  # ------------------------------------------
+  - model_name: coding_fast
+    litellm_params:
+      model: openai/os.environ/MINIMAX_FAST_MODEL
+      api_base: os.environ/MINIMAX_API_BASE
+      api_key: os.environ/MINIMAX_API_KEY
+      order: 1
+      rpm: 180
+      timeout: 45
+    model_info:
+      health_check_timeout: 8
+      health_check_max_tokens: 2
+
+  - model_name: coding_fast
+    litellm_params:
+      model: openai/os.environ/BAILIAN_CODE_MODEL
+      api_base: os.environ/BAILIAN_API_BASE
+      api_key: os.environ/BAILIAN_API_KEY
+      order: 2
+      rpm: 120
+      timeout: 60
+    model_info:
+      health_check_timeout: 10
+      health_check_max_tokens: 2
+
+  - model_name: coding_fast
+    litellm_params:
+      model: gemini/os.environ/GEMINI_FAST_MODEL
+      api_key: os.environ/GEMINI_API_KEY
+      order: 3
+      rpm: 60
+      timeout: 60
+    model_info:
+      health_check_timeout: 10
+      health_check_max_tokens: 2
+
+  # ------------------------------------------
+  # summary_economy = cheap summarize / classify
+  # ------------------------------------------
+  - model_name: summary_economy
+    litellm_params:
+      model: openai/os.environ/BAILIAN_FAST_MODEL
+      api_base: os.environ/BAILIAN_API_BASE
+      api_key: os.environ/BAILIAN_API_KEY
+      order: 1
+      rpm: 300
+      timeout: 20
+    model_info:
+      health_check_timeout: 6
+      health_check_max_tokens: 1
+
+  - model_name: summary_economy
+    litellm_params:
+      model: gemini/os.environ/GEMINI_FAST_MODEL
+      api_key: os.environ/GEMINI_API_KEY
+      order: 2
+      rpm: 120
+      timeout: 25
+    model_info:
+      health_check_timeout: 8
+      health_check_max_tokens: 1
+
+router_settings:
+  routing_strategy: simple-shuffle
+  enable_pre_call_checks: true
+  num_retries: 1
+  fallbacks:
+    - {"coding_primary": ["coding_fast", "chat_balanced", "reasoning_deep"]}
+    - {"coding_fast": ["coding_primary", "chat_balanced"]}
+    - {"reasoning_deep": ["chat_balanced", "chat_fast"]}
+    - {"chat_balanced": ["chat_fast", "reasoning_deep"]}
+    - {"summary_economy": ["chat_fast", "chat_balanced"]}
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  health_check_details: false
