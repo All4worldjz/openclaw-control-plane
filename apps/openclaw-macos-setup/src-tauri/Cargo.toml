@@ -1,0 +1,23 @@
+[package]
+name = "openclaw-macos-setup"
+version = "0.1.0"
+description = "Tauri installer scaffold for OpenClaw prod/mac"
+authors = ["OpenAI Codex"]
+license = "MIT"
+repository = ""
+edition = "2021"
+rust-version = "1.77.2"
+
+[build-dependencies]
+tauri-build = { version = "2.0.1", features = [] }
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+tauri = { version = "2.0.6", features = [] }
+tauri-plugin-dialog = "2.0.1"
+tauri-plugin-shell = "2.0.1"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

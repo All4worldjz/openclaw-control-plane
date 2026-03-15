@@ -1,0 +1,13 @@
+#!/bin/zsh
+set -euo pipefail
+
+source "{{ENV_PATH}}"
+
+mkdir -p "{{LOGS_DIR}}"
+
+exec litellm \
+  --config "{{LITELLM_CONFIG_PATH}}" \
+  --host 127.0.0.1 \
+  --port 4000 \
+  >> "{{LOGS_DIR}}/litellm.stdout.log" \
+  2>> "{{LOGS_DIR}}/litellm.stderr.log"

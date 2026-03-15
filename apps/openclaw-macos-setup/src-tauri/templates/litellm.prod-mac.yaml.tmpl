@@ -1,0 +1,66 @@
+model_list:
+  - model_name: fast_chat
+    litellm_params:
+      model: openai/{{DASHSCOPE_FAST_MODEL}}
+      api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      order: 1
+      timeout: 25
+
+  - model_name: fast_chat
+    litellm_params:
+      model: gemini/{{GEMINI_FAST_MODEL}}
+      api_key: os.environ/GEMINI_API_KEY
+      order: 2
+      timeout: 35
+
+  - model_name: balanced_chat
+    litellm_params:
+      model: openai/{{DASHSCOPE_BALANCED_MODEL}}
+      api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      order: 1
+      timeout: 45
+
+  - model_name: balanced_chat
+    litellm_params:
+      model: gemini/{{GEMINI_DEEP_MODEL}}
+      api_key: os.environ/GEMINI_API_KEY
+      order: 2
+      timeout: 60
+
+  - model_name: coding_primary
+    litellm_params:
+      model: openai/{{DASHSCOPE_CODE_MODEL}}
+      api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      order: 1
+      timeout: 90
+
+  - model_name: coding_primary
+    litellm_params:
+      model: gemini/{{GEMINI_DEEP_MODEL}}
+      api_key: os.environ/GEMINI_API_KEY
+      order: 2
+      timeout: 90
+
+  - model_name: summarization_economy
+    litellm_params:
+      model: openai/{{DASHSCOPE_FAST_MODEL}}
+      api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api_key: os.environ/DASHSCOPE_API_KEY
+      order: 1
+      timeout: 20
+
+router_settings:
+  routing_strategy: simple-shuffle
+  enable_pre_call_checks: true
+  num_retries: 1
+  fallbacks:
+    - {"coding_primary": ["balanced_chat", "fast_chat"]}
+    - {"balanced_chat": ["fast_chat"]}
+    - {"summarization_economy": ["fast_chat"]}
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  health_check_details: false

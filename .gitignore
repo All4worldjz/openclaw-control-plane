@@ -2,6 +2,7 @@
 .DS_Store
 .vscode/
 .idea/
+.cursor/
 *.swp
 *.swo
 
@@ -9,12 +10,18 @@
 .venv/
 venv/
 node_modules/
+**/node_modules/
 dist/
+**/dist/
 build/
+target/
+**/target/
+**/src-tauri/gen/
 __pycache__/
 *.pyc
 npm-debug.log*
 yarn-error.log*
+.pnpm-store/
 
 # Secrets / env
 .env
