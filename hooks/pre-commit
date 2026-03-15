@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "[pre-commit] Running boundary checks..."
+
+STAGED_FILES="$(git diff --cached --name-only || true)"
+
+for f in $STAGED_FILES; do
+  case "$f" in
+    *.pem|*.key|*.p12|*.crt|*.db|*.sqlite|*.sqlite3|*.log|.env|.env.*|*MEMORY.md|*memory.md|*sessions/*|*agent/auth-profiles.json*)
+      echo "Blocked sensitive file from commit: $f"
+      exit 1
+      ;;
+  esac
+done
+
+TMPFILE="$(mktemp /tmp/openclaw-precommit.XXXXXX)"
+git diff --cached -- . > "$TMPFILE" || true
+
+if grep -E -i 'api[_-]?key|app[_-]?secret|bot[_-]?token|authorization:|bearer |sk-[A-Za-z0-9]|AIza[0-9A-Za-z\-_]+' "$TMPFILE" >/dev/null 2>&1; then
+  echo "Possible secret detected in staged diff. Commit blocked."
+  rm -f "$TMPFILE"
+  exit 1
+fi
+
+rm -f "$TMPFILE"
+echo "[pre-commit] OK"

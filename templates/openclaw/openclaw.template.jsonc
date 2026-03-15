@@ -1,0 +1,5 @@
+// Render this into a real config outside Git or keep secrets injected via env.
+// One rendered file per environment: prod/mac, prod/gcp, lab/mac, lab/gcp
+{
+  // to be filled later
+}
