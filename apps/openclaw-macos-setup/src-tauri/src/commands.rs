@@ -129,6 +129,9 @@ pub fn render_prod_mac_config(request: RenderConfigRequest) -> Result<RenderConf
     let run_openclaw_script = scripts_dir.join("run-openclaw.sh");
     let memory_md_path = workspace_dir.join("MEMORY.md");
     let agents_md_path = workspace_dir.join("AGENTS.md");
+    let soul_md_path = workspace_dir.join("SOUL.md");
+    let tools_md_path = workspace_dir.join("TOOLS.md");
+    let user_md_path = workspace_dir.join("USER.md");
 
     let mut values = HashMap::new();
     values.insert("OPENCLAW_RUNTIME_DIR", runtime_repo_dir.display().to_string());
@@ -210,6 +213,9 @@ pub fn render_prod_mac_config(request: RenderConfigRequest) -> Result<RenderConf
     )?;
     write_template("templates/MEMORY.md.tmpl", &memory_md_path, &values)?;
     write_template("templates/AGENTS.md.tmpl", &agents_md_path, &values)?;
+    write_template("templates/SOUL.md.tmpl", &soul_md_path, &values)?;
+    write_template("templates/TOOLS.md.tmpl", &tools_md_path, &values)?;
+    write_template("templates/USER.md.tmpl", &user_md_path, &values)?;
 
     let generated_files = vec![
         RenderedFile {
@@ -239,6 +245,18 @@ pub fn render_prod_mac_config(request: RenderConfigRequest) -> Result<RenderConf
         RenderedFile {
             path: agents_md_path.display().to_string(),
             kind: "workspace-agents".to_string(),
+        },
+        RenderedFile {
+            path: soul_md_path.display().to_string(),
+            kind: "workspace-soul".to_string(),
+        },
+        RenderedFile {
+            path: tools_md_path.display().to_string(),
+            kind: "workspace-tools".to_string(),
+        },
+        RenderedFile {
+            path: user_md_path.display().to_string(),
+            kind: "workspace-user".to_string(),
         },
     ];
 
