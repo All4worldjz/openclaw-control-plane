@@ -601,16 +601,22 @@ _env_perm=$(stat -f "%OLp" "$ENV_FILE" 2>/dev/null || echo "000")
 
 # ── 4b. Provider 直连测试（原始 API，不经过 LiteLLM）────────────────────────
 info "测试 Provider 直连..."
-# source .env 获取密钥
+# source .env 获取密钥；临时关闭 -u 避免 .env 空值变量触发 unbound
+set +u
 set -a; source "$ENV_FILE"; set +a
+set -u
 
 _test_provider() {
   local name="$1" url="$2" key="$3"
-  [[ -z "$key" ]] && { info "跳过 $name（未配置密钥）"; return; }
-  local http_code="000"
+  [[ -z "$key" ]] && { info "跳过 $name（未配置密钥）"; return 0; }
+  local http_code
+  http_code="000"
+  set +e
   http_code=$(curl -sS -o /dev/null -w "%{http_code}" \
     -H "Authorization: Bearer $key" \
-    --max-time 15 "$url" 2>/dev/null) || http_code="000"
+    --max-time 15 "$url" 2>/dev/null)
+  [[ $? -ne 0 ]] && http_code="000"
+  set -e
   if [[ "$http_code" == "200" ]]; then
     _check "$name 直连" "ok" "HTTP $http_code"
   else
@@ -618,7 +624,7 @@ _test_provider() {
   fi
 }
 
-_test_provider "DashScope" \
+_test_provider "阿里云百炼 Bailian" \
   "https://coding.dashscope.aliyuncs.com/v1/models" \
   "${DASHSCOPE_API_KEY:-}"
 
@@ -629,9 +635,12 @@ _test_provider "MiniMax" \
 # Gemini 用不同的 endpoint 格式
 if [[ -n "${GEMINI_API_KEY:-}" ]]; then
   _gemini_code="000"
+  set +e
   _gemini_code=$(curl -sS -o /dev/null -w "%{http_code}" \
     "https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}" \
-    --max-time 15 2>/dev/null) || _gemini_code="000"
+    --max-time 15 2>/dev/null)
+  [[ $? -ne 0 ]] && _gemini_code="000"
+  set -e
   if [[ "$_gemini_code" == "200" ]]; then
     _check "Gemini 直连" "ok" "HTTP $_gemini_code"
   else
@@ -671,19 +680,26 @@ if [[ "$_ready" == "true" ]]; then
 
   _test_model() {
     local group="$1" prompt="$2"
-    local resp="000" http_code="000"
+    local resp http_code
+    resp=""
+    http_code="000"
+    set +e
     resp=$(curl -sS -w "\n%{http_code}" \
       -X POST "http://${LITELLM_HOST}:${LITELLM_PORT}/v1/chat/completions" \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
       --max-time 30 \
       -d "{\"model\":\"${group}\",\"messages\":[{\"role\":\"user\",\"content\":\"${prompt}\"}],\"max_tokens\":10,\"temperature\":0}" \
-      2>/dev/null) || resp=$'\n000'
-    http_code=$(echo "$resp" | tail -1)
+      2>/dev/null)
+    [[ $? -ne 0 ]] && resp=$'\n000'
+    set -e
+    http_code=$(printf '%s' "$resp" | tail -1)
+    [[ -z "$http_code" ]] && http_code="000"
     if [[ "$http_code" == "200" ]]; then
       _check "模型组 ${group}" "ok"
     else
-      local body; body=$(echo "$resp" | head -1)
+      local body
+      body=$(printf '%s' "$resp" | head -1)
       warn "模型组 ${group} 返回 HTTP ${http_code}: ${body:0:120}"
       FAIL=$((FAIL+1))
     fi
