@@ -1,6 +1,57 @@
 # scripts/
 
-维护脚本集合，用于 OpenClaw macOS 环境的安装调试和清理。
+维护脚本集合，用于 OpenClaw macOS 环境的安装、配置和清理。
+
+---
+
+## setup-litellm-router-macos.sh
+
+LiteLLM Router 安装配置脚本（macOS 宇宙，国内网络优先），四阶段自动执行：
+
+| 阶段 | 内容 |
+|------|------|
+| 1. 备份 | 检测已有安装，备份 `$LITELLM_DIR` 和 plist 到 `~/openclaw_litellm_backup_<timestamp>/` |
+| 2. 清理 | 停止 LaunchAgent，终止残留进程，删除旧安装目录，释放端口 |
+| 3. 安装配置 | pip 安装 litellm[proxy]，交互收集 API 密钥，写入 `.env`（chmod 600）、`config.yaml`、`run.sh`、`stop.sh`、LaunchAgent plist |
+| 4. 验证 | 文件完整性、.env 权限、provider 直连、服务就绪、模型端点测试、服务起停验证 |
+
+### 路由设计
+
+- 国内优先：DashScope（order:1）→ MiniMax（order:2）→ Gemini（order:3）
+- 五个抽象能力组：`fast_chat` / `balanced_chat` / `coding_primary` / `coding_fast` / `summary_economy`
+- 路由策略：`simple-shuffle`（官方生产推荐）
+- 密钥写入 `.env`（chmod 600），永不入 Git，永不硬编码在 yaml 中
+
+### 用法
+
+```bash
+# 从项目根目录运行
+./scripts/setup-litellm-router-macos.sh
+
+# 或从 openclaw-macos-setup/scripts 目录运行（同一脚本）
+./openclaw-macos-setup/scripts/setup-litellm-router-macos.sh
+```
+
+### 支持的环境变量覆盖
+
+| 变量 | 默认值 | 说明 |
+|------|--------|------|
+| `OPENCLAW_INSTALL_ROOT` | `~/Library/Application Support/OpenClaw` | 安装根目录 |
+| `LITELLM_PORT` | `4000` | LiteLLM 监听端口 |
+
+### 安装后接入参数
+
+```
+base_url = http://127.0.0.1:4000/v1
+api_key  = sk-openclaw-litellm-local   # 本地占位 master key
+```
+
+### 注意事项
+
+- 不要使用 `sudo` 运行
+- 仅支持 macOS
+- 至少需要填写一个 provider 的 API 密钥（DashScope / MiniMax / Gemini）
+- 备份目录含 `.env`（API 密钥），请妥善保管
 
 ---
 
