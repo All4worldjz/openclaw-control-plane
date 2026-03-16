@@ -42,22 +42,27 @@ BACKUP_ROOT="$HOME/openclaw_litellm_backup_$TIMESTAMP"
 [[ "$(uname -s)" == "Darwin" ]] || die "此脚本仅适用于 macOS"
 [[ "${EUID:-$(id -u)}" -ne 0 ]] || die "请勿使用 sudo 运行此脚本"
 
-# ── 交互读取工具（强制 /dev/tty，兼容管道/重定向）────────────────────────────
+# ── 交互读取工具（写提示到 /dev/tty，再从 /dev/tty 读取，兼容所有终端）──────
 _read_secret() {
   # _read_secret "提示文字" varname
+  # 注意：-p 在重定向 stdin 后不输出提示，必须手动 echo 到 /dev/tty
   local val=""
-  IFS= read -r -s -p "  $1: " val </dev/tty; echo >&2
+  printf "  %s: " "$1" >/dev/tty
+  IFS= read -r -s val </dev/tty
+  printf "\n" >/dev/tty   # 换行（-s 模式不自动换行）
   printf -v "$2" '%s' "$val"
 }
 _read_default() {
   # _read_default "提示文字" "默认值" varname
   local val=""
-  IFS= read -r -p "  $1 [${2}]: " val </dev/tty
+  printf "  %s [%s]: " "$1" "$2" >/dev/tty
+  IFS= read -r val </dev/tty
   printf -v "$3" '%s' "${val:-$2}"
 }
 _confirm() {
   local ans
-  IFS= read -r -p "  ${1:-继续？} [y/N]: " ans </dev/tty
+  printf "  %s [y/N]: " "${1:-继续？}" >/dev/tty
+  IFS= read -r ans </dev/tty
   case "$ans" in [yY][eE][sS]|[yY]) return 0 ;; *) return 1 ;; esac
 }
 
