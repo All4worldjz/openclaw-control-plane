@@ -58,7 +58,7 @@ _read_default() {
   printf -v "$3" '%s' "${val:-$2}"
 }
 _confirm() {
-  local ans
+  local ans=""
   printf "  %s [y/N]: " "${1:-继续？}" >/dev/tty
   IFS= read -r ans </dev/tty
   case "$ans" in [yY][eE][sS]|[yY]) return 0 ;; *) return 1 ;; esac
@@ -609,15 +609,12 @@ set -u
 _test_provider() {
   local name="$1" url="$2" key="$3"
   [[ -z "$key" ]] && { info "跳过 $name（未配置密钥）"; return 0; }
-  local http_code
-  http_code="000"
-  set +e
+  local http_code="000"
   http_code=$(curl -sS -o /dev/null -w "%{http_code}" \
     -H "Authorization: Bearer $key" \
-    --max-time 15 "$url" 2>/dev/null)
-  [[ $? -ne 0 ]] && http_code="000"
-  set -e
-  if [[ "$http_code" == "200" ]]; then
+    --max-time 15 "$url" 2>/dev/null) || http_code="ERR"
+  # curl 返回非200也是正常（401=key错误，404=路径不对），只要不是网络超时就算连通
+  if [[ "$http_code" == "200" || "$http_code" == "401" || "$http_code" == "404" ]]; then
     _check "$name 直连" "ok" "HTTP $http_code"
   else
     warn "$name 直连返回 HTTP $http_code（可能是网络问题，不阻断安装）"
@@ -680,25 +677,19 @@ if [[ "$_ready" == "true" ]]; then
 
   _test_model() {
     local group="$1" prompt="$2"
-    local resp http_code
-    resp=""
-    http_code="000"
-    set +e
+    local resp="placeholder" http_code="000" body=""
     resp=$(curl -sS -w "\n%{http_code}" \
       -X POST "http://${LITELLM_HOST}:${LITELLM_PORT}/v1/chat/completions" \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
       --max-time 30 \
       -d "{\"model\":\"${group}\",\"messages\":[{\"role\":\"user\",\"content\":\"${prompt}\"}],\"max_tokens\":10,\"temperature\":0}" \
-      2>/dev/null)
-    [[ $? -ne 0 ]] && resp=$'\n000'
-    set -e
+      2>/dev/null) || resp=$'\nERR'
     http_code=$(printf '%s' "$resp" | tail -1)
     [[ -z "$http_code" ]] && http_code="000"
     if [[ "$http_code" == "200" ]]; then
       _check "模型组 ${group}" "ok"
     else
-      local body
       body=$(printf '%s' "$resp" | head -1)
       warn "模型组 ${group} 返回 HTTP ${http_code}: ${body:0:120}"
       FAIL=$((FAIL+1))
