@@ -208,7 +208,7 @@ echo -e "  ${BOLD}填写 API 密钥${RESET}（至少填写一个，留空跳过�
 echo -e "  ${YELLOW}密钥只保存在本机 .env 文件中，不会上传任何服务器${RESET}"
 echo
 
-_read_secret "DashScope（阿里云）API Key" DASHSCOPE_API_KEY
+_read_secret "阿里云百炼 Bailian API Key" DASHSCOPE_API_KEY
 _read_secret "MiniMax API Key" MINIMAX_API_KEY
 _read_secret "Gemini API Key" GEMINI_API_KEY
 
@@ -246,7 +246,7 @@ MINIMAX_API_KEY=${MINIMAX_API_KEY}
 GEMINI_API_KEY=${GEMINI_API_KEY}
 
 # Provider Endpoints
-DASHSCOPE_API_BASE=https://dashscope.aliyuncs.com/compatible-mode/v1
+DASHSCOPE_API_BASE=https://coding.dashscope.aliyuncs.com/v1
 MINIMAX_API_BASE=https://api.minimax.io/v1
 
 # Model Names
@@ -579,9 +579,9 @@ section "阶段 4/4  验证"
 PASS=0; FAIL=0
 _check() {
   if [[ "$2" == "ok" ]]; then
-    ok "✓ $1${3:+  ($3)}"; ((PASS++))
+    ok "✓ $1${3:+  ($3)}"; PASS=$((PASS+1))
   else
-    err "✗ $1${3:+  ($3)}"; ((FAIL++))
+    err "✗ $1${3:+  ($3)}"; FAIL=$((FAIL+1))
   fi
 }
 
@@ -619,7 +619,7 @@ _test_provider() {
 }
 
 _test_provider "DashScope" \
-  "https://dashscope.aliyuncs.com/compatible-mode/v1/models" \
+  "https://coding.dashscope.aliyuncs.com/v1/models" \
   "${DASHSCOPE_API_KEY:-}"
 
 _test_provider "MiniMax" \
@@ -628,7 +628,7 @@ _test_provider "MiniMax" \
 
 # Gemini 用不同的 endpoint 格式
 if [[ -n "${GEMINI_API_KEY:-}" ]]; then
-  local _gemini_code="000"
+  _gemini_code="000"
   _gemini_code=$(curl -sS -o /dev/null -w "%{http_code}" \
     "https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}" \
     --max-time 15 2>/dev/null) || _gemini_code="000"
@@ -685,7 +685,7 @@ if [[ "$_ready" == "true" ]]; then
     else
       local body; body=$(echo "$resp" | head -1)
       warn "模型组 ${group} 返回 HTTP ${http_code}: ${body:0:120}"
-      ((FAIL++))
+      FAIL=$((FAIL+1))
     fi
   }
 

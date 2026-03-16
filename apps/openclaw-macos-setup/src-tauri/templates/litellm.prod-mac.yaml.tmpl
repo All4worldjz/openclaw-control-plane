@@ -2,7 +2,7 @@ model_list:
   - model_name: fast_chat
     litellm_params:
       model: openai/{{DASHSCOPE_FAST_MODEL}}
-      api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api_base: https://coding.dashscope.aliyuncs.com/v1
       api_key: os.environ/DASHSCOPE_API_KEY
       order: 1
       timeout: 25
@@ -17,7 +17,7 @@ model_list:
   - model_name: balanced_chat
     litellm_params:
       model: openai/{{DASHSCOPE_BALANCED_MODEL}}
-      api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api_base: https://coding.dashscope.aliyuncs.com/v1
       api_key: os.environ/DASHSCOPE_API_KEY
       order: 1
       timeout: 45
@@ -32,7 +32,7 @@ model_list:
   - model_name: coding_primary
     litellm_params:
       model: openai/{{DASHSCOPE_CODE_MODEL}}
-      api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api_base: https://coding.dashscope.aliyuncs.com/v1
       api_key: os.environ/DASHSCOPE_API_KEY
       order: 1
       timeout: 90
@@ -47,7 +47,7 @@ model_list:
   - model_name: summarization_economy
     litellm_params:
       model: openai/{{DASHSCOPE_FAST_MODEL}}
-      api_base: https://dashscope.aliyuncs.com/compatible-mode/v1
+      api_base: https://coding.dashscope.aliyuncs.com/v1
       api_key: os.environ/DASHSCOPE_API_KEY
       order: 1
       timeout: 20
