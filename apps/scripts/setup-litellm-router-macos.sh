@@ -222,13 +222,13 @@ echo
 echo -e "  ${BOLD}模型名称配置${RESET}（直接回车使用默认值）"
 echo
 
-_read_default "DashScope 快速模型" "qwen-turbo-latest"    DASHSCOPE_FAST_MODEL
-_read_default "DashScope 均衡模型" "qwen-plus-latest"     DASHSCOPE_BALANCED_MODEL
-_read_default "DashScope 编程模型" "qwen3-coder-plus"     DASHSCOPE_CODE_MODEL
-_read_default "MiniMax 快速模型"   "MiniMax-M2.1-lightning" MINIMAX_FAST_MODEL
-_read_default "MiniMax 均衡模型"   "MiniMax-M2.1"         MINIMAX_BALANCED_MODEL
-_read_default "Gemini 快速模型"    "gemini-2.5-flash"     GEMINI_FAST_MODEL
-_read_default "Gemini 深度模型"    "gemini-2.5-pro"       GEMINI_DEEP_MODEL
+_read_default "DashScope 快速模型" "qwen3.5-plus"            DASHSCOPE_FAST_MODEL
+_read_default "DashScope 均衡模型" "qwen3.5-plus"            DASHSCOPE_BALANCED_MODEL
+_read_default "DashScope 编程模型" "qwen3-coder-plus"        DASHSCOPE_CODE_MODEL
+_read_default "MiniMax 快速模型"   "MiniMax-M2.5"            MINIMAX_FAST_MODEL
+_read_default "MiniMax 均衡模型"   "MiniMax-M2.5"            MINIMAX_BALANCED_MODEL
+_read_default "Gemini 快速模型"    "gemini-3.1-flash-lite-preview" GEMINI_FAST_MODEL
+_read_default "Gemini 深度模型"    "gemini-3.1-pro-preview"  GEMINI_DEEP_MODEL
 
 # ── 3e. 创建目录结构 ──────────────────────────────────────────────────────────
 mkdir -p "$LITELLM_DIR" "$LOG_DIR" "$BIN_DIR"
@@ -607,10 +607,10 @@ set -a; source "$ENV_FILE"; set +a
 _test_provider() {
   local name="$1" url="$2" key="$3"
   [[ -z "$key" ]] && { info "跳过 $name（未配置密钥）"; return; }
-  local http_code
+  local http_code="000"
   http_code=$(curl -sS -o /dev/null -w "%{http_code}" \
     -H "Authorization: Bearer $key" \
-    --max-time 15 "$url" 2>/dev/null || echo "000")
+    --max-time 15 "$url" 2>/dev/null) || http_code="000"
   if [[ "$http_code" == "200" ]]; then
     _check "$name 直连" "ok" "HTTP $http_code"
   else
@@ -628,9 +628,10 @@ _test_provider "MiniMax" \
 
 # Gemini 用不同的 endpoint 格式
 if [[ -n "${GEMINI_API_KEY:-}" ]]; then
+  local _gemini_code="000"
   _gemini_code=$(curl -sS -o /dev/null -w "%{http_code}" \
     "https://generativelanguage.googleapis.com/v1beta/models?key=${GEMINI_API_KEY}" \
-    --max-time 15 2>/dev/null || echo "000")
+    --max-time 15 2>/dev/null) || _gemini_code="000"
   if [[ "$_gemini_code" == "200" ]]; then
     _check "Gemini 直连" "ok" "HTTP $_gemini_code"
   else
@@ -670,14 +671,14 @@ if [[ "$_ready" == "true" ]]; then
 
   _test_model() {
     local group="$1" prompt="$2"
-    local resp http_code
+    local resp="000" http_code="000"
     resp=$(curl -sS -w "\n%{http_code}" \
       -X POST "http://${LITELLM_HOST}:${LITELLM_PORT}/v1/chat/completions" \
       -H "Content-Type: application/json" \
       -H "Authorization: Bearer ${LITELLM_MASTER_KEY}" \
       --max-time 30 \
       -d "{\"model\":\"${group}\",\"messages\":[{\"role\":\"user\",\"content\":\"${prompt}\"}],\"max_tokens\":10,\"temperature\":0}" \
-      2>/dev/null || echo -e "\n000")
+      2>/dev/null) || resp=$'\n000'
     http_code=$(echo "$resp" | tail -1)
     if [[ "$http_code" == "200" ]]; then
       _check "模型组 ${group}" "ok"
