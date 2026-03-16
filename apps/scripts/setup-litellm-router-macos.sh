@@ -44,12 +44,10 @@ BACKUP_ROOT="$HOME/openclaw_litellm_backup_$TIMESTAMP"
 
 # ── 交互读取工具（写提示到 /dev/tty，再从 /dev/tty 读取，兼容所有终端）──────
 _read_secret() {
-  # _read_secret "提示文字" varname
-  # 注意：-p 在重定向 stdin 后不输出提示，必须手动 echo 到 /dev/tty
+  # _read_secret "提示文字" varname  （明文输入，密钥保存在本地 .env）
   local val=""
   printf "  %s: " "$1" >/dev/tty
-  IFS= read -r -s val </dev/tty
-  printf "\n" >/dev/tty   # 换行（-s 模式不自动换行）
+  IFS= read -r val </dev/tty
   printf -v "$2" '%s' "$val"
 }
 _read_default() {
