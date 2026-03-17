@@ -1,7 +1,7 @@
 export type InstallStepId =
   | "welcome"
   | "environment"
-  | "source"
+  | "install"
   | "providers"
   | "channels"
   | "launchAgent"
@@ -30,11 +30,8 @@ export type DoctorCheckResult = {
   checks: DoctorCheckItem[];
 };
 
-export type CloneRepoResult = {
-  targetDir: string;
-  branch: string | null;
-  status: "cloned" | "updated";
-  headRef: string | null;
+export type InstallOpenClawResult = {
+  steps: ProvisionStep[];
 };
 
 export type ProviderKeys = {
@@ -63,8 +60,7 @@ export type MemoryConfig = {
 
 export type InstallerForm = {
   installRoot: string;
-  repoUrl: string;
-  repoBranch: string;
+  openclaw_version: string;
   providerKeys: ProviderKeys;
   channels: ChannelConfig;
   memory: MemoryConfig;
@@ -98,10 +94,6 @@ export type ProvisionStep = {
 };
 
 export type ProvisionLiteLlmResult = {
-  steps: ProvisionStep[];
-};
-
-export type ProvisionOpenClawRuntimeResult = {
   steps: ProvisionStep[];
 };
 

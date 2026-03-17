@@ -5,8 +5,6 @@ source "{{ENV_PATH}}"
 
 mkdir -p "{{LOGS_DIR}}"
 
-cd "{{OPENCLAW_RUNTIME_DIR}}"
-
-exec pnpm openclaw gateway --port 18789 \
+exec openclaw gateway --port 18789 \
   >> "{{LOGS_DIR}}/openclaw.stdout.log" \
   2>> "{{LOGS_DIR}}/openclaw.stderr.log"

@@ -16,22 +16,21 @@ pub struct DoctorCheckResult {
     pub checks: Vec<DoctorCheckItem>,
 }
 
+// ── 安装 OpenClaw（npm 包）────────────────────────────────────────────────────
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CloneRepoRequest {
-    pub repo_url: String,
-    pub target_dir: String,
-    pub branch: Option<String>,
+pub struct InstallOpenClawRequest {
+    pub version: String, // 空字符串 = latest
 }
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct CloneRepoResult {
-    pub target_dir: String,
-    pub branch: Option<String>,
-    pub status: String,
-    pub head_ref: Option<String>,
+pub struct InstallOpenClawResult {
+    pub steps: Vec<ProvisionStep>,
 }
+
+// ── 配置生成 ──────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -67,8 +66,6 @@ pub struct MemoryConfig {
 #[serde(rename_all = "camelCase")]
 pub struct RenderConfigRequest {
     pub install_root: String,
-    pub control_plane_dir: String,
-    pub runtime_repo_dir: String,
     pub provider_keys: ProviderKeys,
     pub channels: ChannelConfig,
     pub memory: MemoryConfig,
@@ -89,25 +86,7 @@ pub struct RenderConfigResult {
     pub generated_files: Vec<RenderedFile>,
 }
 
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SmokeCheckRequest {
-    pub install_root: String,
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SmokeCheckItem {
-    pub name: String,
-    pub ok: bool,
-    pub detail: String,
-}
-
-#[derive(Debug, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct SmokeCheckResult {
-    pub checks: Vec<SmokeCheckItem>,
-}
+// ── LiteLLM ───────────────────────────────────────────────────────────────────
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -129,6 +108,30 @@ pub struct ProvisionStep {
     pub detail: String,
 }
 
+// ── Smoke 检查 ────────────────────────────────────────────────────────────────
+
+#[derive(Debug, Deserialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SmokeCheckRequest {
+    pub install_root: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SmokeCheckItem {
+    pub name: String,
+    pub ok: bool,
+    pub detail: String,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct SmokeCheckResult {
+    pub checks: Vec<SmokeCheckItem>,
+}
+
+// ── LaunchAgent ───────────────────────────────────────────────────────────────
+
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LaunchAgentCommandRequest {
@@ -143,10 +146,4 @@ pub struct LaunchAgentCommandResult {
     pub action: String,
     pub ok: bool,
     pub detail: String,
-}
-
-#[derive(Debug, Deserialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ProvisionOpenClawRuntimeRequest {
-    pub runtime_repo_dir: String,
 }
